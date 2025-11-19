@@ -111,7 +111,45 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
 
     @Override
     public List<Alerta> priorizarAlertas(String s, int i) throws IOException {
-        return List.of();
+
+            List<Alerta> lista = new ArrayList<>();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+                String linha = br.readLine(); // ignorar cabeçalho
+
+                while ((linha = br.readLine()) != null) {
+                    String[] campo = linha.split(",");
+
+                    long timestamp = Long.parseLong(campo[0]);
+                    String userId = campo[1];
+                    String sessionId = campo[2];
+                    String actionType = campo[3];
+                    String targetResource = campo[4];
+                    int severityLevel = Integer.parseInt(campo[5]);
+                    long bytesTransferred = Long.parseLong(campo[6]);
+
+                    lista.add(new Alerta(
+                            timestamp,
+                            userId,
+                            sessionId,
+                            actionType,
+                            targetResource,
+                            severityLevel,
+                            bytesTransferred
+                    ));
+                }
+            }
+
+            // Ordem: mais severo ao menos.
+            lista.sort((a1, a2) -> Integer.compare(a2.getSeverityLevel(), a1.getSeverityLevel()));
+
+            // Retorna apenas os n primeiros
+            if (n >= lista.size()) {
+                return lista;
+            }
+            return lista.subList(0, n);
+        }
+
     }
 
     @Override
