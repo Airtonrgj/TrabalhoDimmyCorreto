@@ -64,8 +64,49 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
     }
 
     @Override
-    public List<String> reconstruirLinhaTempo(String s, String s1) throws IOException {
-        return List.of();
+    public List<String> reconstruirLinhaTempo(String arquivo, String sessionId) throws IOException {
+
+        Queue<String> filaAcoes = new LinkedList<>();
+        List<LogEvento> eventos = new ArrayList<>();
+
+        try (BufferedReader arquivos = new BufferedReader(new FileReader(arquivo))) {
+
+            String linha = arquivos.readLine(); // ignora cabeçalho
+
+            while ((linha = arquivos.readLine()) != null) {
+
+                String[] campo = linha.split(",");
+
+                String TIMESTAMP = campo[0];
+                String SESSION_ID = campo[2];
+                String ACTION_TYPE = campo[3];
+
+                if (SESSION_ID.equals(sessionId)) {
+                    eventos.add(new LogEvento(TIMESTAMP, ACTION_TYPE));
+                }
+            }
+
+            eventos.sort(Comparator.comparing(e -> e.timestamp));
+
+            for (LogEvento e : eventos) {
+                filaAcoes.add(e.actionType);
+            }
+
+        }
+
+        return new ArrayList<>(filaAcoes);
+    }
+
+
+    // Classe auxiliar
+    class LogEvento {
+        String timestamp;
+        String actionType;
+
+        public LogEvento(String timestamp, String actionType) {
+            this.timestamp = timestamp;
+            this.actionType = actionType;
+        }
     }
 
     @Override
