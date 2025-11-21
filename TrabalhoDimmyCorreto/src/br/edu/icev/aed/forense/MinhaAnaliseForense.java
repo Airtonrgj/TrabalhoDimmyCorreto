@@ -1,83 +1,77 @@
 package br.edu.icev.aed.forense;
 
-import br.edu.icev.aed.forense.Alerta;
-import br.edu.icev.aed.forense.AnaliseForenseAvancada;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+public class MinhaAnaliseForense implements AnaliseForenseAvancada {
 
-public class MinhaAnaliseForense implements AnaliseForenseAvancada{
-
+    // DESAFIO 1
     @Override
     public Set<String> encontrarSessoesInvalidas(String s) throws IOException {
-        // Implementar usando Map<String, Stack<String>>
-        // A tarefa do desafio é Encontrar Sessões Inválidas, portando a implementação pensada foi a de
-        // Uma pilha de login e uma de logaut usando map que server como um gerneciador de diretórios, ou seja o loguin do joão não interfere em nada o da Maria por exemplo
-
-        //Cria uma pilha para cada usuário basicamente
         Map<String, Stack<String>> sessoesDeUsuario = new HashMap<>();
-
-        //vai coletar todos os IDs de sessões invalidas, sem nenhuma ordem especifica, por que isso vai ser implemntado no desafio 2. coletas as sessões invalidas sem duplicataaas
         Set<String> sessoesInvalidas = new HashSet<>();
 
-        //como ele vai ler o arquivo CSV
-        try (BufferedReader arquivos = new BufferedReader(new FileReader("input/arquivo_logs.csv"))) {
-            String linha = arquivos.readLine();   //ignora o cabeçalho
+        try (BufferedReader arquivos = new BufferedReader(new FileReader(s))) {
+            String linha = arquivos.readLine(); // ignora cabeçalho
 
-            //busca da informações linha por linha até chegar na última Linha
             while ((linha = arquivos.readLine()) != null) {
-                String[] campo = linha.split(",");  //divide a string por virgula
+                String[] campo = linha.split(",");
+
+                // CORREÇÃO: Removido o ; e adicionado continue
+                // Precisamos pelo menos até o índice 3 (ACTION_TYPE)
+                if (campo.length < 4) continue;
 
                 String USER_ID = campo[1];
                 String SESSION_ID = campo[2];
                 String ACTION_TYPE = campo[3];
 
-                //se o usuario não tiver uma pilha ainda então ela é criada
                 if (!sessoesDeUsuario.containsKey(USER_ID)) {
                     sessoesDeUsuario.put(USER_ID, new Stack<>());
                 }
-                //aqui ele cria a pilha se necessário
                 Stack<String> sessoes = sessoesDeUsuario.get(USER_ID);
 
-                //Aqui é o caso do tipo de ação ser igual ou não a de LOGIN. Poderia ser feita baseada no logout tbm
                 if ("LOGIN".equals(ACTION_TYPE)) {
-                    //SE JA TIVER UM LOGIN então vai para sessões invalidas, ja que não pode ter um login seguido de outro
                     if (!sessoes.isEmpty()) {
                         sessoesInvalidas.add(SESSION_ID);
                     }
-                    //se não tiver então ele empilha normalmente nas sessoes
                     sessoes.push(SESSION_ID);
                 } else if ("LOGOUT".equals(ACTION_TYPE)) {
                     if (sessoes.isEmpty() || !sessoes.peek().equals(SESSION_ID)) {
                         sessoesInvalidas.add(SESSION_ID);
                     } else {
-                        //esse logout não tem problemas então é so desempilhar
                         sessoes.pop();
                     }
-
-
                 }
             }
         }
+
+        // VERIFICAÇÃO FINAL: Sessões que ficaram abertas na pilha também são inválidas
+        for (Stack<String> pilha : sessoesDeUsuario.values()) {
+            while(!pilha.isEmpty()) {
+                sessoesInvalidas.add(pilha.pop());
+            }
+        }
+
         return sessoesInvalidas;
     }
 
+
+    // DESAFIO 2
     @Override
     public List<String> reconstruirLinhaTempo(String arquivo, String sessionId) throws IOException {
-
         Queue<String> filaAcoes = new LinkedList<>();
         List<LogEvento> eventos = new ArrayList<>();
 
         try (BufferedReader arquivos = new BufferedReader(new FileReader(arquivo))) {
-
-            String linha = arquivos.readLine(); // ignora cabeçalho
+            String linha = arquivos.readLine();
 
             while ((linha = arquivos.readLine()) != null) {
-
                 String[] campo = linha.split(",");
+
+                // CORREÇÃO: ajustado tamanho mínimo
+                if (campo.length < 4) continue;
 
                 String TIMESTAMP = campo[0];
                 String SESSION_ID = campo[2];
@@ -88,77 +82,84 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
                 }
             }
 
-            eventos.sort(Comparator.comparing(e -> e.timestamp));
+            // Ordenação segura (comparando Longs é melhor que String para timestamp)
+            eventos.sort(Comparator.comparingLong(e -> Long.parseLong(e.timestamp)));
 
             for (LogEvento e : eventos) {
                 filaAcoes.add(e.actionType);
             }
-
         }
-
         return new ArrayList<>(filaAcoes);
     }
 
-
-    // Classe auxiliar
     class LogEvento {
         String timestamp;
         String actionType;
-
         public LogEvento(String timestamp, String actionType) {
             this.timestamp = timestamp;
             this.actionType = actionType;
         }
     }
 
+
+    // DESAFIO 3
     @Override
     public List<Alerta> priorizarAlertas(String s, int n) throws IOException {
+        List<Alerta> lista = new ArrayList<>();
 
-            List<Alerta> lista = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(s))) {
+            String linha = br.readLine();
 
-            try (BufferedReader br = new BufferedReader(new FileReader("arquivo"))) {
-                String linha = br.readLine(); // ignorar cabeçalho
+            while ((linha = br.readLine()) != null) {
+                String[] campo = linha.split(",");
 
-                while ((linha = br.readLine()) != null) {
-                    String[] campo = linha.split(",");
+                // CORREÇÃO 1: Removido o ponto e vírgula e checa tamanho mínimo 6 (até severity)
+                if (campo.length < 6) continue;
 
-                    long timestamp = Long.parseLong(campo[0]);
-                    String userId = campo[1];
-                    String sessionId = campo[2];
-                    String actionType = campo[3];
-                    String targetResource = campo[4];
-                    int severityLevel = Integer.parseInt(campo[5]);
-                    long bytesTransferred = Long.parseLong(campo[6]);
+                long timestamp = Long.parseLong(campo[0]);
+                String userId = campo[1];
+                String sessionId = campo[2];
+                String actionType = campo[3];
+                String targetResource = campo[4];
+                int severityLevel = Integer.parseInt(campo[5]);
 
-                    lista.add(new Alerta(
-                            timestamp,
-                            userId,
-                            sessionId,
-                            actionType,
-                            targetResource,
-                            severityLevel,
-                            bytesTransferred
-                    ));
+                // CORREÇÃO 2: Tratamento seguro para o campo 6 (bytes) que pode não existir
+                long bytesTransferred = 0;
+                if (campo.length > 6 && !campo[6].isEmpty()) {
+                    try {
+                        bytesTransferred = Long.parseLong(campo[6]);
+                    } catch (NumberFormatException e) {
+                        bytesTransferred = 0;
+                    }
                 }
-            }
 
-            // Ordem: mais severo ao menos.
-            lista.sort((a1, a2) -> Integer.compare(a2.getSeverityLevel(), a1.getSeverityLevel()));
-
-            // Retorna apenas os n primeiros
-            if (n >= lista.size()) {
-                return lista;
+                lista.add(new Alerta(
+                        timestamp,
+                        userId,
+                        sessionId,
+                        actionType,
+                        targetResource,
+                        severityLevel,
+                        bytesTransferred
+                ));
             }
-            return lista.subList(0, n);
         }
 
+        lista.sort((a1, a2) -> Integer.compare(a2.getSeverityLevel(), a1.getSeverityLevel()));
+
+        if (n >= lista.size()) {
+            return lista;
+        }
+        return lista.subList(0, n);
+    }
+
+
+    // DESAFIO 4
     @Override
     public Map<Long, Long> encontrarPicosTransferencia(String s) throws IOException {
-        // OTIMIZAÇÃO: Lista com long[] nativo e capacidade pré-alocada
         List<long[]> eventos = new ArrayList<>(10000);
 
-        // Ler arquivo CSV
-        try (BufferedReader br = new BufferedReader(new FileReader("arquivo"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(s))) {
             String linha;
             boolean primeiraLinha = true;
 
@@ -187,19 +188,21 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
                         long timestamp = Long.parseLong(linha.substring(0, firstComma).trim());
                         int nextComma = linha.indexOf(',', sixthComma + 1);
                         int endIndex = (nextComma == -1) ? linha.length() : nextComma;
-                        long bytes = Long.parseLong(linha.substring(sixthComma + 1, endIndex).trim());
 
-                        if (bytes > 0) {
-                            eventos.add(new long[]{timestamp, bytes});
+                        String bytesStr = linha.substring(sixthComma + 1, endIndex).trim();
+                        if (!bytesStr.isEmpty()) {
+                            long bytes = Long.parseLong(bytesStr);
+                            if (bytes > 0) {
+                                eventos.add(new long[]{timestamp, bytes});
+                            }
                         }
-                    } catch (NumberFormatException e) {
-                        // Ignorar linhas inválidas
+                    } catch (Exception e) {
+                        // Ignorar
                     }
                 }
             }
         }
 
-        // Lógica da Stack Monotônica com índices para máxima performance
         Stack<Integer> stack = new Stack<>();
         Map<Long, Long> resultado = new HashMap<>();
 
@@ -227,15 +230,19 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
         return resultado;
     }
 
+
+    // DESAFIO 5
     @Override
     public Optional<List<String>> rastrearContaminacao(String arquivo, String org, String dest) throws IOException {
         Map<String, List<String>> recursosPorSessao = new HashMap<>();
 
-        try (BufferedReader arquivos = new BufferedReader(new FileReader("arquivo"))) {
+        try (BufferedReader arquivos = new BufferedReader(new FileReader(arquivo))) {
             String linha = arquivos.readLine();
 
             while ((linha = arquivos.readLine()) != null) {
                 String[] campo = linha.split(",");
+
+                if (campo.length < 5) continue;
 
                 String sessionId = campo[2];
                 String recursoAcessado = campo[4];
@@ -243,44 +250,27 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
                 if (!recursosPorSessao.containsKey(sessionId)) {
                     recursosPorSessao.put(sessionId, new ArrayList<>());
                 }
-
                 recursosPorSessao.get(sessionId).add(recursoAcessado);
             }
         }
 
-        // monta o grafo com as conexoes entre recursos
-        Map<String, List<String>> grafo = new HashMap<>();
+        Map<String, Set<String>> grafo = new HashMap<>(); // Mudei para Set para evitar duplicatas na lista de adj
 
         for (String sessao : recursosPorSessao.keySet()) {
             List<String> recursos = recursosPorSessao.get(sessao);
-
-            // se um recurso A vem antes de B na mesma sessao, cria aresta A -> B
             for (int i = 0; i < recursos.size() - 1; i++) {
                 String recursoAtual = recursos.get(i);
                 String proximoRecurso = recursos.get(i + 1);
 
-                if (!grafo.containsKey(recursoAtual)) {
-                    grafo.put(recursoAtual, new ArrayList<>());
-                }
-
-                if (!grafo.get(recursoAtual).contains(proximoRecurso)) {
-                    grafo.get(recursoAtual).add(proximoRecurso);
+                if (!recursoAtual.equals(proximoRecurso)) { // Evita laço
+                    grafo.computeIfAbsent(recursoAtual, k -> new HashSet<>()).add(proximoRecurso);
                 }
             }
         }
 
-        if (!grafo.containsKey(org)) {
-            return Optional.empty();
-        }
+        if (!grafo.containsKey(org)) return Optional.empty();
+        if (org.equals(dest)) return Optional.of(Collections.singletonList(org));
 
-        // caso especial: org = dest
-        if (org.equals(dest)) {
-            List<String> caminhoUnico = new ArrayList<>();
-            caminhoUnico.add(org);
-            return Optional.of(caminhoUnico);
-        }
-
-        // BFS pra achar o caminho mais curto
         Queue<String> fila = new LinkedList<>();
         Set<String> visitados = new HashSet<>();
         Map<String, String> antecessor = new HashMap<>();
@@ -299,9 +289,7 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
             }
 
             if (grafo.containsKey(recursoAtual)) {
-                List<String> vizinhos = grafo.get(recursoAtual);
-
-                for (String vizinho : vizinhos) {
+                for (String vizinho : grafo.get(recursoAtual)) {
                     if (!visitados.contains(vizinho)) {
                         visitados.add(vizinho);
                         fila.add(vizinho);
@@ -311,25 +299,16 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
             }
         }
 
-        if (!achou) {
-            return Optional.empty();
-        }
+        if (!achou) return Optional.empty();
 
-        // reconstroi o caminho voltando do dest ate a org
         List<String> caminho = new ArrayList<>();
         String atual = dest;
-
         while (atual != null) {
             caminho.add(atual);
             atual = antecessor.get(atual);
         }
+        Collections.reverse(caminho);
 
-        // inverte pra ficar na ordem certa
-        List<String> caminhoCorreto = new ArrayList<>();
-        for (int i = caminho.size() - 1; i >= 0; i--) {
-            caminhoCorreto.add(caminho.get(i));
-        }
-
-        return Optional.of(caminhoCorreto);
+        return Optional.of(caminho);
     }
 }
