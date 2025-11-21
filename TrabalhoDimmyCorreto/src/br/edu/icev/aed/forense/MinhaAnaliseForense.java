@@ -1,3 +1,5 @@
+package br.edu.icev.aed.forense;
+
 import br.edu.icev.aed.forense.Alerta;
 import br.edu.icev.aed.forense.AnaliseForenseAvancada;
 
@@ -110,11 +112,11 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
     }
 
     @Override
-    public List<Alerta> priorizarAlertas(String s, int i) throws IOException {
+    public List<Alerta> priorizarAlertas(String s, int n) throws IOException {
 
             List<Alerta> lista = new ArrayList<>();
 
-            try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+            try (BufferedReader br = new BufferedReader(new FileReader("arquivo"))) {
                 String linha = br.readLine(); // ignorar cabeçalho
 
                 while ((linha = br.readLine()) != null) {
@@ -149,8 +151,6 @@ public class MinhaAnaliseForense implements AnaliseForenseAvancada{
             }
             return lista.subList(0, n);
         }
-
-    }
 
     @Override
     public Map<Long, Long> encontrarPicosTransferencia(String s) throws IOException {
