@@ -4,7 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6153ce62-94b8-4deb-b349-61366a1e8aea" name="Changes" comment="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <list default="true" id="6153ce62-94b8-4deb-b349-61366a1e8aea" name="Changes" comment="Bild ai no ponto">
+      <change afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/0030552_0030659_0030091.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/README.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/TrabalhoDimmyCorreto.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/br/edu/icev/aed/forense/Alerta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/br/edu/icev/aed/forense/AnaliseForenseAvancada.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/br/edu/icev/aed/forense/MinhaAnaliseForense$LogEvento.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/build/br/edu/icev/aed/forense/MinhaAnaliseForense.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/lib/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/lib/analise-forense-aed.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/lib/br/edu/icev/aed/forense/Alerta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/lib/br/edu/icev/aed/forense/AnaliseForenseAvancada.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrabalhoDimmyCorreto/src/br/edu/icev/aed/forense/MinhaAnaliseForense.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/arquivo_logs.csv" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -122,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763782714836</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Bild ai no ponto">
+      <option name="closed" value="true" />
+      <created>1763834890895</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1763834890895</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -130,6 +157,7 @@
     <MESSAGE value="Trabalho de desafios Finalizado, esperando por testes e documentação" />
     <MESSAGE value="deixando o trabalho REDONDO" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <MESSAGE value="Bild ai no ponto" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bild ai no ponto" />
   </component>
 </project>
